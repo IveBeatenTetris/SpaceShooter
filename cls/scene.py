@@ -16,6 +16,8 @@ class Scene(pg.Surface):
         'cfg'               'dict' with building instructions. made out of user
                             given parameters and default ones for this object.
         'rect'              'pg.rect' this object's dimensions.
+        'background'        'pg.surface' for redrawing the background of this
+                            object when needed.
         """
         self.cfg = u.validateDict(kwargs, defaults)
         # determining size of the scene

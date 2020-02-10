@@ -34,13 +34,21 @@ class Main(object):
         self.loop()
     def handle_events(self):
         """returns a list of pygame-events."""
+        # overall key events
         for evt in pg.event.get():
             # quitting the game
             if evt.type is pg.QUIT:
                 self.app.quit()
             if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
                 self.app.quit()
-
+            # transforming starship on moving up/down
+            if evt.type is pg.KEYDOWN:
+                if evt.key is pg.K_w:
+                    player.tilt("up")
+                elif evt.key is pg.K_s:
+                    player.tilt("down")
+            elif evt.type is pg.KEYUP:
+                player.tilt()
         # controlling the spaceship
         keys = pg.key.get_pressed()
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
