@@ -3,32 +3,33 @@ from cls.window import Window
 from cls.scene import Scene
 from cls.entity import Entity
 
+scenes = {
+    "startup": Scene(
+        size = (800, 500),
+        position = (0, 0),
+        background = (5, 5, 10)
+    )
+}
+
 class Main(object):
     """main class. will be called on execute."""
     def __init__(self):
         """
         'app'               'window' the window object to display scenes in.
         'starship'          'entity' represents the controllable spaceship.
-        'scenes'            'dict' holds all visual scenes to draw.
         'scene'             'scene' based on this, the related scene will be
                             used for displaying it in the window object.
         'running'           'bool' used to evaluate running process.
         """
         self.app = Window(
-            size = ((800, 500)),
+            size = scenes["startup"].rect.size,
             title = "Space Shooter 0.1",
             fps = 70
         )
         self.starship = Entity(
             type = "hero"
         )
-        self.scenes = {
-            "startup": Scene(
-                size = self.app.size,
-                position = (0, 0)
-            )
-        }
-        self.scene = self.scenes["startup"]
+        self.scene = scenes["startup"]
         self.running = True
 
         self.loop()
