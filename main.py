@@ -16,9 +16,12 @@ class Main(object):
         """pygame main loop."""
         while self.running:
             # events
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
+            for evt in pg.event.get():
+                # quitting the game
+                if evt.type is pg.QUIT:
+                    self.app.quit()
+                if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
+                    self.app.quit()
             # updating
             self.app.update()
 

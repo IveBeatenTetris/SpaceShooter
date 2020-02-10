@@ -1,5 +1,6 @@
 import pygame as pg
 import utils as u
+import sys
 
 # default values for constructing a window without user given parameters
 defaults = {
@@ -28,6 +29,10 @@ class Window(object):
     def set_title(self, title):
         """sets the new given title to the window."""
         pg.display.set_caption(title)
+    def quit(self):
+        """exits the app."""
+        pg.quit()
+        sys.exit()
     def update(self):
         """updates visuals within the window. called at every main-loop end."""
         pg.display.update()
