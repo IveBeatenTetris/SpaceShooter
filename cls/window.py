@@ -1,4 +1,5 @@
 import pygame as pg
+from cls.scene import Scene
 import utils as u
 import sys
 
@@ -21,8 +22,18 @@ class Window(object):
         pg.init()
         self.cfg = u.validateDict(kwargs, defaults)
         self.display = self.get_display()
+        self.size = self.display.get_rect().size
         self.clock = pg.time.Clock()
         self.set_title(self.cfg["title"])
+    def draw(self, object, pos=None, rect=None):
+        """
+        draws the given object to the window. 'object' can be a 'pg.surface',
+        'pg.sprite' or just be pygame related like this game's entities.
+        """
+        if type(object) is Scene:
+            if not pos: pos = object.rect
+
+        self.display.blit(object, pos)
     def get_display(self):# pg.surface
         """recreates the display and returns it."""
         return pg.display.set_mode(self.cfg["size"])

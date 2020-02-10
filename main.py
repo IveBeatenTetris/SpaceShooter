@@ -1,11 +1,19 @@
 import pygame as pg
 from cls.window import Window
+from cls.scene import Scene
 from cls.entity import Entity
 
 class Main(object):
     """main class. will be called on execute."""
     def __init__(self):
-        """."""
+        """
+        'app'               'window' the window object to display scenes in.
+        'starship'          'entity' represents the controllable spaceship.
+        'scenes'            'dict' holds all visual scenes to draw.
+        'scene'             'scene' based on this, the related scene will be
+                            used for displaying it in the window object.
+        'running'           'bool' used to evaluate running process.
+        """
         self.app = Window(
             size = ((800, 500)),
             title = "Space Shooter 0.1",
@@ -14,6 +22,13 @@ class Main(object):
         self.starship = Entity(
             type = "hero"
         )
+        self.scenes = {
+            "startup": Scene(
+                size = self.app.size,
+                position = (0, 0)
+            )
+        }
+        self.scene = self.scenes["startup"]
         self.running = True
 
         self.loop()
@@ -31,7 +46,7 @@ class Main(object):
             # events
             self.handle_events()
             # drawing
-
+            self.app.draw(self.scene)
             # updating
             self.app.update()
 
