@@ -5,7 +5,9 @@ PATH = {
 }
 DEFAULT = {
     "player": {
-        "image": PATH["images"] + "starship_0.png"
+        "image": PATH["images"] + "starship_0.png",
+        "rotation": 90,
+        "speed": 2
     }
 }
 

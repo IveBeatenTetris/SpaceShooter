@@ -1,4 +1,5 @@
 import pygame as pg
+from cls.entities import *
 import utils as u
 
 # default values for construction without user given parameters
@@ -23,13 +24,21 @@ class Scene(pg.Surface):
         # initializing surface
         pg.Surface.__init__(self, self.cfg["size"], pg.SRCALPHA)
         self.rect = pg.Rect(self.cfg["position"], self.cfg["size"])
-        self.create_background()
-    def create_background(self):
-        """recreates the background depending on 'cfg["background"]'."""
-        bg = self.cfg["background"]
+        self.background = self.create_background()
+        # first time drawing background to surface
+        self.blit(self.background, self.rect)
+    def create_background(self):# pg.surface
+        """
+        recreates the background depending on 'cfg["background"]' and returns
+        it.
+        """
+        background = pg.Surface(self.rect.size, pg.SRCALPHA)
 
-        if bg:
-            # filling with solid color
-            if type(bg) is tuple or type(bg) is list:
-                if len(bg) == 3:
-                    self.fill(self.cfg["background"])
+        if self.cfg["background"]:
+            bg = self.cfg["background"]
+            background.fill(bg)
+
+        return background
+    def update(self):
+        """updates visuals within the scene. called at every main-loop end."""
+        pass

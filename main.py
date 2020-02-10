@@ -2,8 +2,9 @@ import pygame as pg
 from cls.window import Window
 from cls.scene import Scene
 from cls.entities import *
+import utils as u
 
-player = Player()
+player = Player(**u.DEFAULT["player"])
 scenes = {
     "startup": Scene(
         size = (800, 500),
@@ -39,14 +40,26 @@ class Main(object):
                 self.app.quit()
             if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
                 self.app.quit()
+
+        # controlling the spaceship
+        keys = pg.key.get_pressed()
+        if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
+            self.scene.blit(self.scene.background, player.rect, player.rect)
+            if keys[pg.K_a]: player.rect.left -= player.speed
+            if keys[pg.K_d]: player.rect.left += player.speed
+            if keys[pg.K_w]: player.rect.top -= player.speed
+            if keys[pg.K_s]: player.rect.top += player.speed
     def loop(self):
         """pygame main loop."""
         while self.running:
             # events
             self.handle_events()
             # drawing
+            self.scene.blit(self.scene.background, player.rect, player.rect)
+            self.scene.blit(player.image, player.rect)
             self.app.draw(self.scene)
             # updating
+            self.scene.update()
             self.app.update()
 
 if __name__ == '__main__':
