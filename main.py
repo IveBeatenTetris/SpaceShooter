@@ -1,5 +1,6 @@
 import pygame as pg
 from cls.window import Window
+from cls.entity import Entity
 
 class Main(object):
     """main class. will be called on execute."""
@@ -10,7 +11,11 @@ class Main(object):
             title = "Space Shooter 0.1",
             fps = 70
         )
+        self.starship = Entity(
+            type = "hero"
+        )
         self.running = True
+
         self.loop()
     def handle_events(self):
         """returns a list of pygame-events."""
@@ -25,6 +30,8 @@ class Main(object):
         while self.running:
             # events
             self.handle_events()
+            # drawing
+
             # updating
             self.app.update()
 

@@ -1,6 +1,6 @@
 import os
 
-PATH_IMG = os.getcwd() + "\\images\\"
+PATH_IMG = os.getcwd() + "\\img\\"
 
 def validateDict(user_cfg={}, defaults={}):# dict
     """

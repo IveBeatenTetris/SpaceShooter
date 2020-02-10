@@ -2,7 +2,7 @@ import pygame as pg
 import utils as u
 import sys
 
-# default values for constructing a window without user given parameters
+# default values for construction without user given parameters
 defaults = {
     "size": (320*2, 240*2),
     "title": "Space Shooter",
