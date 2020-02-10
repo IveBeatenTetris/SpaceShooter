@@ -1,8 +1,9 @@
 import pygame as pg
 from cls.window import Window
 from cls.scene import Scene
-from cls.entity import Entity
+from cls.entities import *
 
+player = Player()
 scenes = {
     "startup": Scene(
         size = (800, 500),
@@ -25,9 +26,6 @@ class Main(object):
             size = scenes["startup"].rect.size,
             title = "Space Shooter 0.1",
             fps = 70
-        )
-        self.starship = Entity(
-            type = "hero"
         )
         self.scene = scenes["startup"]
         self.running = True

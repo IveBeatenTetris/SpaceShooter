@@ -1,6 +1,13 @@
 import os
 
-PATH_IMG = os.getcwd() + "\\img\\"
+PATH = {
+    "images": os.getcwd() + "\\img\\"
+}
+DEFAULT = {
+    "player": {
+        "image": PATH["images"] + "starship_0.png"
+    }
+}
 
 def validateDict(user_cfg={}, defaults={}):# dict
     """
