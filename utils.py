@@ -8,6 +8,9 @@ DEFAULT = {
         "image": PATH["images"] + "starship_0.png",
         "rotation": 90,
         "speed": 2
+    },
+    "asteroid_3x2": {
+        "image": PATH["images"] + "asteroid_3x2.png"
     }
 }
 

@@ -5,6 +5,8 @@ from cls.entities import *
 import utils as u
 
 player = Player(**u.DEFAULT["player"])
+asteroid = Asteroid(**u.DEFAULT["asteroid_3x2"])
+asteroid.rect.topleft = (400, 250)
 scenes = {
     "startup": Scene(
         size = (800, 500),
@@ -47,6 +49,10 @@ class Main(object):
                     player.tilt("up")
                 elif evt.key is pg.K_s:
                     player.tilt("down")
+                elif evt.key is pg.K_a:
+                    player.tilt("left")
+                elif evt.key is pg.K_d:
+                    player.tilt("right")
             elif evt.type is pg.KEYUP:
                 player.tilt()
         # controlling the spaceship
@@ -65,6 +71,7 @@ class Main(object):
             # drawing
             self.scene.blit(self.scene.background, player.rect, player.rect)
             self.scene.blit(player.image, player.rect)
+            self.scene.blit(asteroid.image, asteroid.rect)
             self.app.draw(self.scene)
             # updating
             self.scene.update()
