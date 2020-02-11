@@ -3,16 +3,33 @@ from cls.window import Window
 from cls.scene import Scene
 from cls.entities import *
 import utils as u
+import random
+
+screen_size = (800, 500)
+render_list = pg.sprite.RenderUpdates()
 
 player = Player(**u.DEFAULT["player"])
 player.rect.topleft = (50, 200)
-asteroid = Asteroid(**u.DEFAULT["asteroid_3x2"])
-asteroid.rect.center = (400, 250)
-render_list = pg.sprite.RenderUpdates()
-render_list.add(asteroid)
+
+count = 0
+while count != 50:
+    pivot = (
+        random.randint(0, screen_size[0]),
+        random.randint(0, screen_size[1])
+    )
+    asteroid = Asteroid(
+        size = (
+            random.randint(25, 48),
+            random.randint(20, 40)
+        ),
+        position = pivot
+    )
+    count += 1
+    render_list.add(asteroid)
+
 scenes = {
     "startup": Scene(
-        size = (800, 500),
+        size = screen_size,
         position = (0, 0),
         background = (5, 5, 10)
     )
@@ -57,15 +74,17 @@ class Main(object):
                     player.tilt("left")
                 elif evt.key is pg.K_d:
                     player.tilt("right")
+            # resetting tilt image
             elif evt.type is pg.KEYUP:
                 player.tilt()
-            # shooting
-            if evt.type is evt.type is pg.KEYDOWN and evt.key is pg.K_SPACE:
-                render_list.add(Projectile(
-                    image = player.standard_shot,
-                    rotation = player.cfg["rotation"],
-                    position = player.rect.topright
-                ))
+            elif evt.type is pg.MOUSEBUTTONDOWN:
+                # shooting
+                if evt.button == 1:
+                    render_list.add(Projectile(
+                        image = player.standard_shot,
+                        rotation = player.cfg["rotation"],
+                        position = player.rect.topright
+                    ))
         # moving the spaceship
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
             self.scene.blit(self.scene.background, player.rect, player.rect)

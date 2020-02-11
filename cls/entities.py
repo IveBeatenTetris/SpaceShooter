@@ -50,21 +50,32 @@ class Explosion(pg.sprite.Sprite):
         self.cooldown[0] -= 1
 class Asteroid(pg.sprite.Sprite):
     def __init__(self, **kwargs):
-        self.cfg = kwargs
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["asteroid_43x43"])
         pg.sprite.Sprite.__init__(self)
-        self.original_image = pg.image.load(kwargs["image"])
+        self.original_image = pg.image.load(self.cfg["image"])
+        self.rect = pg.Rect((0, 0), self.cfg["size"])
+        self.rect.center = self.cfg["position"]
         self.rotation = [0, 360, random.random()]
-        self.image = self.original_image.copy()
+        self.image = self.create_image()
         #self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
-        self.rect = self.image.get_rect()
+    def create_image(self):# pg.surface
+        surface = pg.Surface(self.cfg["size"], pg.SRCALPHA)
+        image = self.original_image.copy()
+        image = u.scale(image, self.cfg["size"])
+        surface.blit(image, (0, 0))
+
+        return surface
     def update(self):
-        self.image = self.original_image.copy()
+        self.image = self.create_image()
         self.image = pg.transform.rotate(self.image, self.rotation[0])
         #self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
         self.rect.size = self.image.get_rect().size
+        self.rect.center = self.cfg["position"]
 
-        if self.rotation[0] == self.rotation[1]: self.rotation[0] = 0
-        else: self.rotation[0] += self.rotation[2]
+        if self.rotation[0] == self.rotation[1]:
+            self.rotation[0] = 0
+        else:
+            self.rotation[0] += self.rotation[2]
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = kwargs

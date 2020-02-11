@@ -12,8 +12,10 @@ DEFAULT = {
         "default_shot": PATH["images"] + "shot1.png",
         "shooting_speed": 6
     },
-    "asteroid_3x2": {
-        "image": PATH["images"] + "asteroid_3x2.png"
+    "asteroid_43x43": {
+        "image": PATH["images"] + "asteroid_43x43.png",
+        "size": (43, 43),
+        "position": (0, 0)
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png"
