@@ -102,6 +102,19 @@ def drawBorder(surface, **kwargs):
     )
 
     return surface
+def scale(surface, factor):# pg.surface
+    """
+    scaling a surface by afactor.
+    'factor' must be an integer tuple or a list.
+    usage: surf = scale(display, 2).
+        surf = scale(display, (100, 50))
+    """
+    if type(factor) is int:
+        size = [each * factor for each in surface.get_rect().size]
+    elif type(factor) is tuple or type(factor) is list:
+        size = factor
+
+    return pg.transform.scale(surface, size)
 def validateDict(user_cfg={}, defaults={}):# dict
     """
     validates a dictionary by comparing it to the default values from another

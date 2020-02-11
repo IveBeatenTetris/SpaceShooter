@@ -86,7 +86,7 @@ class Main(object):
                 if each.rect.colliderect(asteroid.rect):
                     render_list.add(Explosion(
                         image = u.DEFAULT["explosion"]["image"],
-                        position = each.rect.center
+                        position = each.rect.midright
                     ))
                     render_list.remove(each)
             elif type(each) is Explosion:

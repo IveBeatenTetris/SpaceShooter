@@ -19,13 +19,30 @@ class Explosion(pg.sprite.Sprite):
         self.original_image = pg.image.load(kwargs["image"])
         self.rect = self.original_image.get_rect()
         self.rect.center = kwargs["position"]
-        self.cooldown = [100, 100]
+        self.cooldown = [65, 100]
+        self.rotation = random.randint(0, 360)
+        self.size = [*self.rect.size]
     @property
     def image(self):
         image = pg.Surface(self.original_image.get_rect().size, pg.SRCALPHA)
-        img = self.original_image.copy()
+        img = pg.transform.rotate(self.original_image.copy(), self.rotation)
         img.set_colorkey((102, 255, 0))
-        img.set_alpha(self.cooldown[0])
+
+        alpha = int(self.cooldown[0] * 255 / 100)
+        img.set_alpha(alpha)
+
+        if self.size[0] == 0 or self.size[0] == 0:
+            self.size[0], self.size[1] = 0, 0
+            img.set_alpha(0)
+        else:
+            if not alpha % 3:
+                self.size[0] += 1
+                self.size[1] += 1
+            img = u.scale(img, self.size)
+            self.rect.size = img.get_rect().size
+            self.rect.center = self.cfg["position"]
+            image = pg.Surface(self.rect.size, pg.SRCALPHA)
+
         image.blit(img, (0, 0))
 
         return image
