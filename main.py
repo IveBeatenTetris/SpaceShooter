@@ -5,8 +5,9 @@ from cls.entities import *
 import utils as u
 
 player = Player(**u.DEFAULT["player"])
+player.rect.topleft = (50, 200)
 asteroid = Asteroid(**u.DEFAULT["asteroid_3x2"])
-asteroid.rect.topleft = (400, 250)
+asteroid.rect.center = (400, 250)
 render_list = pg.sprite.RenderUpdates()
 render_list.add(asteroid)
 scenes = {
@@ -72,10 +73,24 @@ class Main(object):
             if keys[pg.K_d]: player.rect.left += player.speed
             if keys[pg.K_w]: player.rect.top -= player.speed
             if keys[pg.K_s]: player.rect.top += player.speed
-
+        # removing sprites going out of bounds
         for each in render_list:
             if type(each) is Projectile:
                 if each.rect.left > self.app.size[0]:
+                    render_list.remove(each)
+        # rotating asteroids
+        asteroid.rect.center = (400, 250)
+        # handling collisions and explosions
+        for each in render_list:
+            if type(each) is Projectile:
+                if each.rect.colliderect(asteroid.rect):
+                    render_list.add(Explosion(
+                        image = u.DEFAULT["explosion"]["image"],
+                        position = each.rect.center
+                    ))
+                    render_list.remove(each)
+            elif type(each) is Explosion:
+                if each.cooldown[0] == 0:
                     render_list.remove(each)
     def loop(self):
         """pygame main loop."""

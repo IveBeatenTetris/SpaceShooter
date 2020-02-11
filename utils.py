@@ -6,14 +6,17 @@ PATH = {
 }
 DEFAULT = {
     "player": {
-        "image": PATH["images"] + "starship_0.png",
+        "image": PATH["images"] + "starship.png",
         "rotation": 90,
         "speed": 2,
-        "default_shot": PATH["images"] + "starship_3.png",
+        "default_shot": PATH["images"] + "shot1.png",
         "shooting_speed": 6
     },
     "asteroid_3x2": {
         "image": PATH["images"] + "asteroid_3x2.png"
+    },
+    "explosion": {
+        "image": PATH["images"] + "explosion1.png"
     }
 }
 
