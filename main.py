@@ -80,7 +80,6 @@ class Main(object):
     def loop(self):
         """pygame main loop."""
         while self.running:
-            print(render_list)
             # events
             self.handle_events()
             # drawing
@@ -88,6 +87,11 @@ class Main(object):
             changes = render_list.draw(self.scene)
             self.scene.blit(player.image, player.rect)
             self.app.draw(self.scene)
+            self.app.draw(
+                u.createText(
+                    text = "fps: {}".format(int(self.app.clock.get_fps()))
+                )
+            )
             # updating
             for each in render_list: each.update()
             self.scene.update()

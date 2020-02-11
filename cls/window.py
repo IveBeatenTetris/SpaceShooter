@@ -32,6 +32,8 @@ class Window(object):
         """
         if type(object) is Scene:
             if not pos: pos = object.rect
+        else:
+            pos = (0, 0)
 
         self.display.blit(object, pos)
     def get_display(self):# pg.surface

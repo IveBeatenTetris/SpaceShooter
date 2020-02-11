@@ -10,13 +10,14 @@ class Projectile(pg.sprite.Sprite):
             self.image = pg.transform.rotate(self.image, kwargs["rotation"])
         self.rect = pg.Rect(kwargs["position"], self.image.get_rect().size)
     def update(self):
-        self.rect.left += 4
+        self.rect.left += u.DEFAULT["player"]["shooting_speed"]
 class Asteroid(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = kwargs
         pg.sprite.Sprite.__init__(self)
         self.original_image = pg.image.load(kwargs["image"])
         self.image = self.original_image.copy()
+        self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
         self.rect = self.image.get_rect()
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
