@@ -7,7 +7,8 @@ DEFAULT = {
     "player": {
         "image": PATH["images"] + "starship_0.png",
         "rotation": 90,
-        "speed": 2
+        "speed": 2,
+        "default_shot": PATH["images"] + "starship_3.png",
     },
     "asteroid_3x2": {
         "image": PATH["images"] + "asteroid_3x2.png"

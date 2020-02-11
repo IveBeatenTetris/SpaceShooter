@@ -7,6 +7,8 @@ import utils as u
 player = Player(**u.DEFAULT["player"])
 asteroid = Asteroid(**u.DEFAULT["asteroid_3x2"])
 asteroid.rect.topleft = (400, 250)
+render_list = pg.sprite.RenderUpdates()
+render_list.add(asteroid)
 scenes = {
     "startup": Scene(
         size = (800, 500),
@@ -36,6 +38,7 @@ class Main(object):
         self.loop()
     def handle_events(self):
         """returns a list of pygame-events."""
+        keys = pg.key.get_pressed()
         # overall key events
         for evt in pg.event.get():
             # quitting the game
@@ -43,7 +46,7 @@ class Main(object):
                 self.app.quit()
             if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
                 self.app.quit()
-            # transforming starship on moving up/down
+            # tilting starship on moving up/down
             if evt.type is pg.KEYDOWN:
                 if evt.key is pg.K_w:
                     player.tilt("up")
@@ -55,27 +58,40 @@ class Main(object):
                     player.tilt("right")
             elif evt.type is pg.KEYUP:
                 player.tilt()
-        # controlling the spaceship
-        keys = pg.key.get_pressed()
+            # shooting
+            if evt.type is evt.type is pg.KEYDOWN and evt.key is pg.K_SPACE:
+                render_list.add(Projectile(
+                    image = player.standard_shot,
+                    rotation = player.cfg["rotation"],
+                    position = player.rect.topright
+                ))
+        # moving the spaceship
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
             self.scene.blit(self.scene.background, player.rect, player.rect)
             if keys[pg.K_a]: player.rect.left -= player.speed
             if keys[pg.K_d]: player.rect.left += player.speed
             if keys[pg.K_w]: player.rect.top -= player.speed
             if keys[pg.K_s]: player.rect.top += player.speed
+
+        for each in render_list:
+            if type(each) is Projectile:
+                if each.rect.left > self.app.size[0]:
+                    render_list.remove(each)
     def loop(self):
         """pygame main loop."""
         while self.running:
+            print(render_list)
             # events
             self.handle_events()
             # drawing
-            self.scene.blit(self.scene.background, player.rect, player.rect)
+            render_list.clear(self.scene, self.scene.background)
+            changes = render_list.draw(self.scene)
             self.scene.blit(player.image, player.rect)
-            self.scene.blit(asteroid.image, asteroid.rect)
             self.app.draw(self.scene)
             # updating
+            for each in render_list: each.update()
             self.scene.update()
-            self.app.update()
+            self.app.update(changes)
 
 if __name__ == '__main__':
     Main()

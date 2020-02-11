@@ -44,7 +44,9 @@ class Window(object):
         """exits the app."""
         pg.quit()
         sys.exit()
-    def update(self):
+    def update(self, changes=None):
         """updates visuals within the window. called at every main-loop end."""
         pg.display.update()
+        if changes:
+            pg.display.update(changes)
         self.clock.tick(self.cfg["fps"])
