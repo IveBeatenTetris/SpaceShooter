@@ -15,7 +15,9 @@ DEFAULT = {
     "asteroid_43x43": {
         "image": PATH["images"] + "asteroid_43x43.png",
         "size": (43, 43),
-        "position": (0, 0)
+        "position": (0, 0),
+        "moving": None,
+        "box": False
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png"

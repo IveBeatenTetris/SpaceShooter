@@ -57,20 +57,30 @@ class Asteroid(pg.sprite.Sprite):
         self.rect.center = self.cfg["position"]
         self.rotation = [0, 360, random.random()]
         self.image = self.create_image()
-        #self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
+        if self.cfg["box"]:
+            self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
     def create_image(self):# pg.surface
         surface = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = self.original_image.copy()
+        if bool(random.getrandbits(1)):
+            pg.transform.flip(
+                image,
+                bool(random.getrandbits(1)),
+                bool(random.getrandbits(1))
+            )
         image = u.scale(image, self.cfg["size"])
         surface.blit(image, (0, 0))
 
         return surface
-    def update(self):
+    def rotate(self):
         self.image = self.create_image()
         self.image = pg.transform.rotate(self.image, self.rotation[0])
-        #self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
+        if self.cfg["box"]:
+            self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
         self.rect.size = self.image.get_rect().size
         self.rect.center = self.cfg["position"]
+    def update(self):
+        self.rotate()
 
         if self.rotation[0] == self.rotation[1]:
             self.rotation[0] = 0

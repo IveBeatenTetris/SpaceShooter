@@ -22,7 +22,9 @@ while count != 50:
             random.randint(25, 48),
             random.randint(20, 40)
         ),
-        position = pivot
+        position = pivot,
+        moving = "left",
+        box = True,
     )
     count += 1
     render_list.add(asteroid)
