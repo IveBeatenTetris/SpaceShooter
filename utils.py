@@ -20,8 +20,8 @@ DEFAULT = {
         "size": (43, 43),
         "position": (0, 0),
         "moving": None,
-        "speed": 1
-
+        "speed": 1,
+        "health": 100
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png"

@@ -56,11 +56,25 @@ class Asteroid(pg.sprite.Sprite):
         self.rect = pg.Rect((0, 0), self.cfg["size"])
         self.position = self.cfg["position"]
         self.rect.center = self.position
+        self.health = self.cfg["health"]
         self.rotation = [0, 360, random.random()]
         self.moving = self.cfg["moving"]
         self.image = self.create_image()
         if self.cfg["box"]:
             self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
+    @property# pg.surface
+    def healthbar(self):
+        color = (200, 15, 25)
+        healthbar = pg.Surface((self.health, 3), pg.SRCALPHA)
+        rect = [0, 0, self.health, 3]
+
+        healthbar.fill(color, rect)
+
+        return healthbar
+
+    def hit(self, damage):
+        if not self.health - damage < 0:
+            self.health -= damage
     def create_image(self):# pg.surface
         surface = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = self.original_image.copy()
@@ -71,6 +85,7 @@ class Asteroid(pg.sprite.Sprite):
                 bool(random.getrandbits(1))
             )
         image = u.scale(image, self.cfg["size"])
+
         surface.blit(image, (0, 0))
 
         return surface
@@ -105,6 +120,7 @@ class Asteroid(pg.sprite.Sprite):
     def update(self):
         self.rotate()
         self.move()
+        self.image.blit(self.healthbar, (0, 0))
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["player"])

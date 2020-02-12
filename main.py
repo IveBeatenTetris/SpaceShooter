@@ -29,6 +29,7 @@ while count != 25:
         position = pivot,
         moving = "left",
         speed = random.uniform(0.7, 1.7),
+        health = 32
         #box = True,
     ))
     count += 1
@@ -99,29 +100,6 @@ class Main(object):
             if keys[pg.K_d]: player.rect.left += player.speed
             if keys[pg.K_w]: player.rect.top -= player.speed
             if keys[pg.K_s]: player.rect.top += player.speed
-        # restarting sprites going out of bounds
-        for each in render_list:
-            if type(each) is Projectile:
-                if each.rect.left > self.app.size[0]:
-                    render_list.remove(each)
-            elif type(each) is Asteroid:
-                if each.moving:
-                    if each.moving == "left":
-                        if each.rect.right < 0:
-                            #render_list.remove(each)
-                            each.reposition((
-                                self.app.size[0] + each.rect.width,
-                                random.randint(-24, screen_size[1] + 24)
-                            ))
-                            #each.rect.left = self.app.size[0]
-                    elif each.moving == "right":
-                        if each.rect.left > self.app.size[0]:
-                            #render_list.remove(each)
-                            each.reposition((
-                                -each.rect.width,
-                                random.randint(-24, screen_size[1] + 24)
-                            ))
-                            #each.rect.right = 0
         # handling collisions and explosions
         for each in render_list:
             if type(each) is Projectile:
@@ -132,9 +110,33 @@ class Main(object):
                             position = each.rect.midright
                         ))
                         render_list.remove(each)
+
+                        asteroid.hit(2)
+                        if asteroid.health < 1:
+                            asteroids.remove(asteroid)
+                            render_list.remove(asteroid)
             elif type(each) is Explosion:
                 if each.cooldown[0] == 0:
                     render_list.remove(each)
+        # restarting sprites going out of bounds
+        for each in render_list:
+            if type(each) is Projectile:
+                if each.rect.left > self.app.size[0]:
+                    render_list.remove(each)
+            elif type(each) is Asteroid:
+                if each.moving:
+                    if each.moving == "left":
+                        if each.rect.right < 0:
+                            each.reposition((
+                                self.app.size[0] + each.rect.width,
+                                random.randint(-24, screen_size[1] + 24)
+                            ))
+                    elif each.moving == "right":
+                        if each.rect.left > self.app.size[0]:
+                            each.reposition((
+                                -each.rect.width,
+                                random.randint(-24, screen_size[1] + 24)
+                            ))
     def loop(self):
         """pygame main loop."""
         while self.running:
