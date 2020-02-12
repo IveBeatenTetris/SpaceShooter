@@ -54,8 +54,10 @@ class Asteroid(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.original_image = pg.image.load(self.cfg["image"])
         self.rect = pg.Rect((0, 0), self.cfg["size"])
-        self.rect.center = self.cfg["position"]
+        self.position = self.cfg["position"]
+        self.rect.center = self.position
         self.rotation = [0, 360, random.random()]
+        self.moving = self.cfg["moving"]
         self.image = self.create_image()
         if self.cfg["box"]:
             self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
@@ -72,32 +74,58 @@ class Asteroid(pg.sprite.Sprite):
         surface.blit(image, (0, 0))
 
         return surface
+    def move(self):
+        if self.moving:
+            if self.moving == "left":
+                left = self.position[0] - self.cfg["speed"]
+            elif self.moving == "right":
+                left = self.position[0] + self.cfg["speed"]
+
+            self.position = (left, self.position[1])
+            self.rect.center = self.position
+
+        self.rect.center = self.position
+    def reposition(self, position):
+        self.rect.center = position
+        self.position = position
     def rotate(self):
         self.image = self.create_image()
         self.image = pg.transform.rotate(self.image, self.rotation[0])
         if self.cfg["box"]:
             self.image = u.drawBorder(self.image, size=1, color=(255,0,0))
         self.rect.size = self.image.get_rect().size
-        self.rect.center = self.cfg["position"]
-    def update(self):
-        self.rotate()
+
+        if self.moving:
+            self.rect.center = self.position
 
         if self.rotation[0] == self.rotation[1]:
             self.rotation[0] = 0
         else:
             self.rotation[0] += self.rotation[2]
+    def update(self):
+        self.rotate()
+        self.move()
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
-        self.cfg = kwargs
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["player"])
         pg.sprite.Sprite.__init__(self)
-        self.original_image = pg.image.load(kwargs["image"])
+        self.original_image = pg.image.load(self.cfg["image"])
         self.bow = None
         self.image = self.create_image()
         self.rect = self.image.get_rect()
-        self.speed = kwargs["speed"]
-        self.standard_shot = pg.image.load(kwargs["default_shot"])
+        self.speed = self.cfg["speed"]
+        self.standard_shot = pg.image.load(self.cfg["default_shot"])
     def create_image(self):
         img = self.original_image.copy()
+
+        if self.cfg["scale"]:
+            img = u.scale(
+                img,
+                (
+                    int(img.get_rect().width * self.cfg["scale"]),
+                    int(img.get_rect().height * self.cfg["scale"]),
+                )
+            )
 
         if self.cfg["rotation"] > 0:
             img = pg.transform.rotate(img, self.cfg["rotation"])
@@ -112,6 +140,9 @@ class Player(pg.sprite.Sprite):
                 height -= 5
 
             img = pg.transform.scale(img, (width, height))
+
+        if self.cfg["box"]:
+            img = u.drawBorder(img, size=1, color=(255,0,0))
 
         return img
     def tilt(self, direction=None):

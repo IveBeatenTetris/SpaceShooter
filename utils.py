@@ -7,6 +7,8 @@ PATH = {
 DEFAULT = {
     "player": {
         "image": PATH["images"] + "starship.png",
+        "box": False,
+        "scale": 1,
         "rotation": 90,
         "speed": 2,
         "default_shot": PATH["images"] + "shot1.png",
@@ -14,10 +16,12 @@ DEFAULT = {
     },
     "asteroid_43x43": {
         "image": PATH["images"] + "asteroid_43x43.png",
+        "box": False,
         "size": (43, 43),
         "position": (0, 0),
         "moving": None,
-        "box": False
+        "speed": 1
+
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png"

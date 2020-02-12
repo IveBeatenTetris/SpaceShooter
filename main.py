@@ -8,26 +8,31 @@ import random
 screen_size = (800, 500)
 render_list = pg.sprite.RenderUpdates()
 
-player = Player(**u.DEFAULT["player"])
+player = Player(
+    #box = True,
+    scale = 2
+)
 player.rect.topleft = (50, 200)
 
 count = 0
-while count != 50:
+asteroids = []
+while count != 25:
     pivot = (
         random.randint(0, screen_size[0]),
-        random.randint(0, screen_size[1])
+        random.randint(-24, screen_size[1] + 24)
     )
-    asteroid = Asteroid(
+    asteroids.append(Asteroid(
         size = (
-            random.randint(25, 48),
-            random.randint(20, 40)
+            random.randint(15, 68),
+            random.randint(25, 60)
         ),
         position = pivot,
         moving = "left",
-        box = True,
-    )
+        speed = random.uniform(0.7, 1.7),
+        #box = True,
+    ))
     count += 1
-    render_list.add(asteroid)
+render_list.add(*asteroids)
 
 scenes = {
     "startup": Scene(
@@ -94,22 +99,39 @@ class Main(object):
             if keys[pg.K_d]: player.rect.left += player.speed
             if keys[pg.K_w]: player.rect.top -= player.speed
             if keys[pg.K_s]: player.rect.top += player.speed
-        # removing sprites going out of bounds
+        # restarting sprites going out of bounds
         for each in render_list:
             if type(each) is Projectile:
                 if each.rect.left > self.app.size[0]:
                     render_list.remove(each)
-        # rotating asteroids
-        asteroid.rect.center = (400, 250)
+            elif type(each) is Asteroid:
+                if each.moving:
+                    if each.moving == "left":
+                        if each.rect.right < 0:
+                            #render_list.remove(each)
+                            each.reposition((
+                                self.app.size[0] + each.rect.width,
+                                random.randint(-24, screen_size[1] + 24)
+                            ))
+                            #each.rect.left = self.app.size[0]
+                    elif each.moving == "right":
+                        if each.rect.left > self.app.size[0]:
+                            #render_list.remove(each)
+                            each.reposition((
+                                -each.rect.width,
+                                random.randint(-24, screen_size[1] + 24)
+                            ))
+                            #each.rect.right = 0
         # handling collisions and explosions
         for each in render_list:
             if type(each) is Projectile:
-                if each.rect.colliderect(asteroid.rect):
-                    render_list.add(Explosion(
-                        image = u.DEFAULT["explosion"]["image"],
-                        position = each.rect.midright
-                    ))
-                    render_list.remove(each)
+                for asteroid in asteroids:
+                    if each.rect.colliderect(asteroid.rect):
+                        render_list.add(Explosion(
+                            image = u.DEFAULT["explosion"]["image"],
+                            position = each.rect.midright
+                        ))
+                        render_list.remove(each)
             elif type(each) is Explosion:
                 if each.cooldown[0] == 0:
                     render_list.remove(each)
