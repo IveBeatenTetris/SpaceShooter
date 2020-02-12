@@ -11,6 +11,7 @@ DEFAULT = {
         "scale": 1,
         "rotation": 90,
         "speed": 2,
+        "damage": 1,
         "default_shot": PATH["images"] + "shot1.png",
         "shooting_speed": 6
     },
@@ -24,7 +25,13 @@ DEFAULT = {
         "health": 100
     },
     "explosion": {
-        "image": PATH["images"] + "explosion1.png"
+        "image": PATH["images"] + "explosion1.png",
+        "cooldown": 100,
+        "position": (0, 0)
+    },
+    "particle": {
+        "size": (1, 1),
+        "color": (200, 200, 200)
     }
 }
 

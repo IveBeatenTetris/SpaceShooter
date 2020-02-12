@@ -5,23 +5,14 @@ from cls.entities import *
 import utils as u
 import random
 
-screen_size = (800, 500)
-render_list = pg.sprite.RenderUpdates()
+def create_asteroid():
+    #pivot = (
+        #random.randint(0, screen_size[0]),
+        #random.randint(-24, screen_size[1] + 24)
+    #)
+    pivot = (screen_size[0] + 32, random.randint(-24, screen_size[1] + 24))
 
-player = Player(
-    #box = True,
-    scale = 2
-)
-player.rect.topleft = (50, 200)
-
-count = 0
-asteroids = []
-while count != 25:
-    pivot = (
-        random.randint(0, screen_size[0]),
-        random.randint(-24, screen_size[1] + 24)
-    )
-    asteroids.append(Asteroid(
+    return Asteroid(
         size = (
             random.randint(15, 68),
             random.randint(25, 60)
@@ -29,9 +20,25 @@ while count != 25:
         position = pivot,
         moving = "left",
         speed = random.uniform(0.7, 1.7),
-        health = 32
+        health = 30
         #box = True,
-    ))
+    )
+
+screen_size = (800, 500)
+render_list = pg.sprite.RenderUpdates()
+
+player = Player(
+    #box = True,
+    scale = 2,
+    speed = 3,
+    damage = 30
+)
+player.rect.topleft = (50, 200)
+
+count = 0
+asteroids = []
+while count != 25:
+    asteroids.append(create_asteroid())
     count += 1
 render_list.add(*asteroids)
 
@@ -103,21 +110,29 @@ class Main(object):
         # handling collisions and explosions
         for each in render_list:
             if type(each) is Projectile:
-                for asteroid in asteroids:
+                for i, asteroid in enumerate(asteroids):
                     if each.rect.colliderect(asteroid.rect):
                         render_list.add(Explosion(
                             image = u.DEFAULT["explosion"]["image"],
-                            position = each.rect.midright
+                            position = each.rect.midright,
+                            cooldown = 65
                         ))
                         render_list.remove(each)
 
-                        asteroid.hit(2)
-                        if asteroid.health < 1:
-                            asteroids.remove(asteroid)
+                        asteroid.hit(player.damage)
+
+                        if asteroid.health <= 0:
                             render_list.remove(asteroid)
+                            asteroids[i] = create_asteroid()
+                            render_list.add(asteroids[i])
+                            #print(len(render_list))
+            # removing explosion form render list after cooldown reached 0
             elif type(each) is Explosion:
-                if each.cooldown[0] == 0:
+                if each.cooldown == 0:
                     render_list.remove(each)
+
+        #if len(asteroids) < 25:
+        #
         # restarting sprites going out of bounds
         for each in render_list:
             if type(each) is Projectile:

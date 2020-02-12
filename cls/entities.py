@@ -2,6 +2,17 @@ import pygame as pg
 import utils as u
 import random
 
+class Particle(pg.sprite.Sprite):
+    def __init__(self, **kwargs):
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["particle"])
+        pg.sprite.Sprite.__init__(self)
+        self.image = self.create_particle()
+    def create_particle(self):# pg.surface
+        particle = pg.Surface(self.cfg["size"], pg.SRCALPHA)
+
+        particle.fill(self.cfg["color"])
+
+        return particle
 class Projectile(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = kwargs
@@ -14,21 +25,23 @@ class Projectile(pg.sprite.Sprite):
         self.rect.left += u.DEFAULT["player"]["shooting_speed"]
 class Explosion(pg.sprite.Sprite):
     def __init__(self, **kwargs):
-        self.cfg = kwargs
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["explosion"])
         pg.sprite.Sprite.__init__(self)
         self.original_image = pg.image.load(kwargs["image"])
         self.rect = self.original_image.get_rect()
-        self.rect.center = kwargs["position"]
-        self.cooldown = [65, 100]
+        self.rect.center = self.cfg["position"]
+        self.cooldown = self.cfg["cooldown"]
         self.rotation = random.randint(0, 360)
         self.size = [*self.rect.size]
-    @property
+        self.particles = self.create_particles()
+    # dynamic attributes
+    @property# pg.surface
     def image(self):
         image = pg.Surface(self.original_image.get_rect().size, pg.SRCALPHA)
         img = pg.transform.rotate(self.original_image.copy(), self.rotation)
         img.set_colorkey((102, 255, 0))
 
-        alpha = int(self.cooldown[0] * 255 / 100)
+        alpha = int(self.cooldown * 255 / 100)
         img.set_alpha(alpha)
 
         if self.size[0] == 0 or self.size[0] == 0:
@@ -46,8 +59,19 @@ class Explosion(pg.sprite.Sprite):
         image.blit(img, (0, 0))
 
         return image
+    # basic operations
+    def create_particles(self):# list
+        particles = []
+        count = random.randint(5, 25)
+
+        for each in range(count):
+            particles.append(Particle(
+
+            ))
+
+        return particles
     def update(self):
-        self.cooldown[0] -= 1
+        self.cooldown -= 1
 class Asteroid(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["asteroid_43x43"])
@@ -75,6 +99,8 @@ class Asteroid(pg.sprite.Sprite):
     def hit(self, damage):
         if not self.health - damage < 0:
             self.health -= damage
+        else:
+            self.health = 0
     def create_image(self):# pg.surface
         surface = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = self.original_image.copy()
@@ -131,6 +157,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = self.cfg["speed"]
         self.standard_shot = pg.image.load(self.cfg["default_shot"])
+        self.damage = self.cfg["damage"]
     def create_image(self):
         img = self.original_image.copy()
 
