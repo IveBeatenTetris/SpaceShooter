@@ -6,18 +6,18 @@ import utils as u
 import random
 
 def create_asteroid():
-    #pivot = (
-        #random.randint(0, screen_size[0]),
-        #random.randint(-24, screen_size[1] + 24)
-    #)
-    pivot = (screen_size[0] + 32, random.randint(-24, screen_size[1] + 24))
+    pivot1 = (
+        random.randint(0, screen_size[0]),
+        random.randint(-24, screen_size[1] + 24)
+    )
+    pivot2 = (screen_size[0] + 32, random.randint(-24, screen_size[1] + 24))
 
     return Asteroid(
         size = (
             random.randint(15, 68),
             random.randint(25, 60)
         ),
-        position = pivot,
+        position = pivot1,
         moving = "left",
         speed = random.uniform(0.7, 1.7),
         health = 30
@@ -31,7 +31,7 @@ player = Player(
     #box = True,
     scale = 2,
     speed = 3,
-    damage = 30
+    damage = 5
 )
 player.rect.topleft = (50, 200)
 
@@ -124,15 +124,15 @@ class Main(object):
                         if asteroid.health <= 0:
                             render_list.remove(asteroid)
                             asteroids[i] = create_asteroid()
+                            asteroids[i].reposition((
+                                self.app.size[0] + 44,
+                                random.randint(-24, screen_size[1] + 24)
+                            ))
                             render_list.add(asteroids[i])
-                            #print(len(render_list))
             # removing explosion form render list after cooldown reached 0
             elif type(each) is Explosion:
                 if each.cooldown == 0:
                     render_list.remove(each)
-
-        #if len(asteroids) < 25:
-        #
         # restarting sprites going out of bounds
         for each in render_list:
             if type(each) is Projectile:

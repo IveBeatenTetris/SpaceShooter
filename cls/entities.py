@@ -2,17 +2,6 @@ import pygame as pg
 import utils as u
 import random
 
-class Particle(pg.sprite.Sprite):
-    def __init__(self, **kwargs):
-        self.cfg = u.validateDict(kwargs, u.DEFAULT["particle"])
-        pg.sprite.Sprite.__init__(self)
-        self.image = self.create_particle()
-    def create_particle(self):# pg.surface
-        particle = pg.Surface(self.cfg["size"], pg.SRCALPHA)
-
-        particle.fill(self.cfg["color"])
-
-        return particle
 class Projectile(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = kwargs
@@ -33,14 +22,14 @@ class Explosion(pg.sprite.Sprite):
         self.cooldown = self.cfg["cooldown"]
         self.rotation = random.randint(0, 360)
         self.size = [*self.rect.size]
-        self.particles = self.create_particles()
     # dynamic attributes
     @property# pg.surface
     def image(self):
         image = pg.Surface(self.original_image.get_rect().size, pg.SRCALPHA)
+        # rotating image
         img = pg.transform.rotate(self.original_image.copy(), self.rotation)
+        # updating transparency of the image nearing the end of cooldown
         img.set_colorkey((102, 255, 0))
-
         alpha = int(self.cooldown * 255 / 100)
         img.set_alpha(alpha)
 
@@ -55,21 +44,11 @@ class Explosion(pg.sprite.Sprite):
             self.rect.size = img.get_rect().size
             self.rect.center = self.cfg["position"]
             image = pg.Surface(self.rect.size, pg.SRCALPHA)
-
+        # drawing created image to returning surface
         image.blit(img, (0, 0))
 
         return image
     # basic operations
-    def create_particles(self):# list
-        particles = []
-        count = random.randint(5, 25)
-
-        for each in range(count):
-            particles.append(Particle(
-
-            ))
-
-        return particles
     def update(self):
         self.cooldown -= 1
 class Asteroid(pg.sprite.Sprite):

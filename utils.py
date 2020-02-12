@@ -31,7 +31,9 @@ DEFAULT = {
     },
     "particle": {
         "size": (1, 1),
-        "color": (200, 200, 200)
+        "color": (200, 200, 200),
+        "velocity": (1, 1),
+        "center": (0, 0)
     }
 }
 
