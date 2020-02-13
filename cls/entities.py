@@ -42,8 +42,12 @@ class Explosion(pg.sprite.Sprite):
                 self.size[1] += 1
             img = u.scale(img, self.size)
             self.rect.size = img.get_rect().size
-            self.rect.center = self.cfg["position"]
+            #self.rect.center = self.cfg["position"]
             image = pg.Surface(self.rect.size, pg.SRCALPHA)
+
+        if "scale" in self.cfg:
+            img = u.scale(img, self.cfg["scale"])
+            print("scale")
         # drawing created image to returning surface
         image.blit(img, (0, 0))
 
@@ -127,6 +131,21 @@ class Asteroid(pg.sprite.Sprite):
         self.rotate()
         self.move()
         self.image.blit(self.healthbar, (0, 0))
+class Boss(pg.sprite.Sprite):
+    def __init__(self, **kwargs):
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["boss"])
+        pg.sprite.Sprite.__init__(self)
+        self.original = pg.image.load(self.cfg["image"])
+        self.rotation = self.cfg["rotation"]
+        self.image = self.create_image()
+        self.rect = self.image.get_rect()
+        self.rect.center = self.cfg["center"]
+    def create_image(self):# pg.surface
+        #image = pg.Surface(self.cfg["size"], pg.SRCALPHA)
+
+        image = pg.transform.rotate(self.original, self.rotation)
+
+        return image
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["player"])
@@ -135,6 +154,7 @@ class Player(pg.sprite.Sprite):
         self.bow = None
         self.image = self.create_image()
         self.rect = self.image.get_rect()
+        self.rect.center = self.cfg["center"]
         self.speed = self.cfg["speed"]
         self.standard_shot = pg.image.load(self.cfg["default_shot"])
         self.damage = self.cfg["damage"]

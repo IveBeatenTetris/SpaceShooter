@@ -10,6 +10,7 @@ DEFAULT = {
         "box": False,
         "scale": 1,
         "rotation": 90,
+        "center": (0, 0),
         "speed": 2,
         "damage": 1,
         "default_shot": PATH["images"] + "shot1.png",
@@ -27,6 +28,12 @@ DEFAULT = {
         "speed": 1,
         "health": 100,
         "damage": .5
+    },
+    "boss": {
+        "image": PATH["images"] + "boss1.png",
+        "size": (48, 48),
+        "center": (0, 0),
+        "rotation": -90
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",
@@ -82,7 +89,7 @@ def createText(**kwargs):# pg.surface
     surface.blit(text, (0, 0))
 
     return surface
-def drawBorder(surface, **kwargs):
+def drawBorder(surface, **kwargs):# pg.surface
     """
     draws a border on the given surface-object and returns it.
     keyword-arguments can be:
@@ -121,6 +128,47 @@ def drawBorder(surface, **kwargs):
         ],
         cfg["size"]
     )
+
+    return surface
+def createText(**kwargs):# pg.surface
+    """returns a pg.surface with the text already blitten to it."""
+    default = {
+        "text": "No Text was passed.",
+        "font": "ebrima",
+        "size": 16,
+        "color": (255, 255, 255),
+        "background": None,
+        "antialias": True,
+        "bold": False,
+        "italic": False,
+        "wrap": None
+    }
+    # validating arguments
+    cfg = validateDict(kwargs, default)
+    # building font-object
+    font = pg.font.SysFont(cfg["font"], cfg["size"])
+    font.set_bold(cfg["bold"])
+    font.set_italic(cfg["italic"])
+    # normal render for none-wrapping content
+    if not cfg["wrap"]:
+        text = font.render(
+            cfg["text"],
+            cfg["antialias"],
+            cfg["color"]
+        )
+    # wrapping text
+    else:
+        text = wrapText(
+            font = font,
+            text = cfg["text"],
+            size = cfg["wrap"],
+            color = cfg["color"],
+            antialias = cfg["antialias"]
+        )
+    # drawing background if one is given
+    surface = pg.Surface((text.get_rect().size), pg.SRCALPHA)
+    if cfg["background"]: surface.fill(cfg["background"])
+    surface.blit(text, (0, 0))
 
     return surface
 def scale(surface, factor):# pg.surface

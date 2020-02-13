@@ -19,7 +19,7 @@ class Window(object):
         'display'           'pg.surface' holds all visuals drawn to it.
         'clock'             'pg.clock' object to keep track of time ran by.
         """
-        pg.init()
+        #pg.init()
         self.cfg = u.validateDict(kwargs, defaults)
         self.display = self.get_display()
         self.size = self.display.get_rect().size

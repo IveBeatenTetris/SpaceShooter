@@ -2,8 +2,11 @@ import pygame as pg
 from cls.window import Window
 from cls.scene import Scene
 from cls.entities import *
+from cls.ui import *
 import utils as u
 import random
+
+pg.init()
 
 def create_asteroid():
     pivot1 = (
@@ -24,20 +27,22 @@ def create_asteroid():
         #box = True,
     )
 
-screen_size = (800, 500)
+screen_size, screen_center = (800, 500), (400, 250)
 render_list = pg.sprite.RenderUpdates()
 
 player = Player(
     #box = True,
     scale = 2,
     speed = 3,
-    damage = 5
+    damage = 5,
+    center = (50, 200)
 )
-player.rect.topleft = (50, 200)
-healthbar = PlayerHealthBar(
-    health = 100,
-    midbottom = (int(screen_size[0] / 2), screen_size[1])
+render_list.add(player)
+
+boss1 = Boss(
+    center = (650, 250)
 )
+#render_list.add(boss1)
 
 count = 0
 asteroids = []
@@ -45,6 +50,28 @@ while count != 25:
     asteroids.append(create_asteroid())
     count += 1
 render_list.add(*asteroids)
+
+healthbar = PlayerHealthBar(
+    health = 100,
+    midbottom = (int(screen_size[0] / 2), screen_size[1])
+)
+render_list.add(healthbar)
+
+gameover_text = Text(
+    text = "Game Over",
+    size = 40,
+    center = (screen_center[0], screen_center[1] - 180),
+    bold = True
+)
+tryagain_button = Button(
+    text = "Try again",
+    size = 30,
+    center = (screen_center[0], screen_center[1]),
+    background = (35, 35, 45),
+    hover = (55, 55, 65),
+    padding = [15, 25, 15, 25],
+    border = (3, (75, 75, 85))
+)
 
 scenes = {
     "startup": Scene(
@@ -60,15 +87,7 @@ scenes = {
 }
 
 class Main(object):
-    """main class. will be called on execute."""
     def __init__(self):
-        """
-        'app'               'window' the window object to display scenes in.
-        'starship'          'entity' represents the controllable spaceship.
-        'scene'             'scene' based on this, the related scene will be
-                            used for displaying it in the window object.
-        'running'           'bool' used to evaluate running process.
-        """
         self.app = Window(
             size = scenes["startup"].rect.size,
             title = "Space Shooter 0.1",
@@ -76,10 +95,15 @@ class Main(object):
         )
         self.scene = scenes["startup"]
         self.running = True
-
+        self.pause = False
+        self.blow_up = Explosion(
+            image = u.DEFAULT["explosion"]["image"],
+            position = player.rect.center,
+            cooldown = 100
+        )
         self.loop()
     def handle_events(self):
-        """returns a list of pygame-events."""
+        blow_up = None
         keys = pg.key.get_pressed()
         # overall key events
         for evt in pg.event.get():
@@ -166,6 +190,25 @@ class Main(object):
                             ))
         # game over
         if healthbar.health <= 0:
+            render_list.add(self.blow_up)
+            if self.blow_up.cooldown > 0:
+                self.blow_up.cooldown -= 1
+                self.blow_up.rect.center = player.rect.center
+            elif self.blow_up.cooldown <= 0:
+                self.blow_up = Explosion(
+                    image = u.DEFAULT["explosion"]["image"],
+                    position = player.rect.center,
+                    cooldown = 100,
+                    scale = 2
+                )
+        if self.blow_up.cooldown <= 1:
+            render_list.remove(self.blow_up)
+            self.blow_up = Explosion(
+                image = u.DEFAULT["explosion"]["image"],
+                position = player.rect.center,
+                cooldown = 100,
+                scale = 2
+            )
             self.scene = scenes["game_over"]
     def loop(self):
         """pygame main loop."""
@@ -176,8 +219,6 @@ class Main(object):
                 # drawing
                 render_list.clear(self.scene, self.scene.background)
                 changes = render_list.draw(self.scene)
-                self.scene.blit(player.image, player.rect)
-                self.scene.blit(healthbar.image, healthbar.rect)
                 self.app.draw(self.scene)
                 self.app.draw(
                     u.createText(
@@ -195,9 +236,19 @@ class Main(object):
                     if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
                         self.app.quit()
 
-                self.app.draw(self.scene.background)
+                self.scene.blit(self.scene.background, (0, 0))
+                self.scene.blit(gameover_text.image, gameover_text.rect)
+                self.scene.blit(tryagain_button.image, tryagain_button.rect)
+                self.app.draw(self.scene)
 
+                self.scene.update()
+                tryagain_button.update()
                 self.app.update()
+                # start over
+                if tryagain_button.click:
+                    self.scene = scenes["startup"]
+                    self.scene.blit(self.scene.background, (0, 0))
+                    healthbar.health = 100
 
 if __name__ == '__main__':
     Main()
