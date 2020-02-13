@@ -15,6 +15,9 @@ DEFAULT = {
         "default_shot": PATH["images"] + "shot1.png",
         "shooting_speed": 6
     },
+    "player_healthbar": {
+        "size": (300, 25)
+    },
     "asteroid_43x43": {
         "image": PATH["images"] + "asteroid_43x43.png",
         "box": False,
@@ -22,7 +25,8 @@ DEFAULT = {
         "position": (0, 0),
         "moving": None,
         "speed": 1,
-        "health": 100
+        "health": 100,
+        "damage": .5
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",

@@ -34,6 +34,10 @@ player = Player(
     damage = 5
 )
 player.rect.topleft = (50, 200)
+healthbar = PlayerHealthBar(
+    health = 100,
+    midbottom = (int(screen_size[0] / 2), screen_size[1])
+)
 
 count = 0
 asteroids = []
@@ -44,6 +48,11 @@ render_list.add(*asteroids)
 
 scenes = {
     "startup": Scene(
+        size = screen_size,
+        position = (0, 0),
+        background = (5, 5, 10)
+    ),
+    "game_over": Scene(
         size = screen_size,
         position = (0, 0),
         background = (5, 5, 10)
@@ -133,6 +142,9 @@ class Main(object):
             elif type(each) is Explosion:
                 if each.cooldown == 0:
                     render_list.remove(each)
+            elif type(each) is Asteroid:
+                if each.rect.colliderect(player.rect):
+                    healthbar.health -= each.damage
         # restarting sprites going out of bounds
         for each in render_list:
             if type(each) is Projectile:
@@ -152,25 +164,40 @@ class Main(object):
                                 -each.rect.width,
                                 random.randint(-24, screen_size[1] + 24)
                             ))
+        # game over
+        if healthbar.health <= 0:
+            self.scene = scenes["game_over"]
     def loop(self):
         """pygame main loop."""
         while self.running:
-            # events
-            self.handle_events()
-            # drawing
-            render_list.clear(self.scene, self.scene.background)
-            changes = render_list.draw(self.scene)
-            self.scene.blit(player.image, player.rect)
-            self.app.draw(self.scene)
-            self.app.draw(
-                u.createText(
-                    text = "fps: {}".format(int(self.app.clock.get_fps()))
+            if self.scene is scenes["startup"]:
+                # events
+                self.handle_events()
+                # drawing
+                render_list.clear(self.scene, self.scene.background)
+                changes = render_list.draw(self.scene)
+                self.scene.blit(player.image, player.rect)
+                self.scene.blit(healthbar.image, healthbar.rect)
+                self.app.draw(self.scene)
+                self.app.draw(
+                    u.createText(
+                        text = "fps: {}".format(int(self.app.clock.get_fps()))
+                    )
                 )
-            )
-            # updating
-            for each in render_list: each.update()
-            self.scene.update()
-            self.app.update(changes)
+                # updating
+                for each in render_list: each.update()
+                self.scene.update()
+                self.app.update(changes)
+            elif self.scene is scenes["game_over"]:
+                for evt in pg.event.get():
+                    if evt.type is pg.QUIT:
+                        self.app.quit()
+                    if evt.type is pg.KEYDOWN and evt.key is pg.K_ESCAPE:
+                        self.app.quit()
+
+                self.app.draw(self.scene.background)
+
+                self.app.update()
 
 if __name__ == '__main__':
     Main()

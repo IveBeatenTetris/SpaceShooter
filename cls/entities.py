@@ -60,6 +60,7 @@ class Asteroid(pg.sprite.Sprite):
         self.position = self.cfg["position"]
         self.rect.center = self.position
         self.health = self.cfg["health"]
+        self.damage = self.cfg["damage"]
         self.rotation = [0, 360, random.random()]
         self.moving = self.cfg["moving"]
         self.image = self.create_image()
@@ -181,3 +182,37 @@ class Player(pg.sprite.Sprite):
                 self.bow = "right"
 
         self.image = self.create_image()
+class PlayerHealthBar(pg.sprite.Sprite):
+    def __init__(self, **kwargs):
+        self.cfg = u.validateDict(kwargs, u.DEFAULT["player_healthbar"])
+        pg.sprite.Sprite.__init__(self)
+        self.health = kwargs["health"]
+        self.rect = self.image.get_rect()
+        self.rect.midbottom = kwargs["midbottom"]
+    @property# pg.surface
+    def image(self):
+        image = pg.Surface(self.cfg["size"])
+        image_rect = image.get_rect()
+        border_rect = pg.Rect(
+            1,
+            1,
+            image_rect.width - 2,
+            image_rect.height - 2,
+        )
+        healthbar_width = border_rect.width * self.health / 100
+        health_rect = pg.Rect(
+            2,
+            2,
+            healthbar_width - 2,
+            border_rect.height - 2,
+        )
+
+        red = (200, 50, 45)
+        black = (5, 5, 15)
+        white = (185, 195, 200)
+
+        image.fill(white)
+        image.fill(black, border_rect)
+        image.fill(red, health_rect)
+
+        return image
