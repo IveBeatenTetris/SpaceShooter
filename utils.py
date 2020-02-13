@@ -33,7 +33,8 @@ DEFAULT = {
         "image": PATH["images"] + "boss1.png",
         "size": (48, 48),
         "center": (0, 0),
-        "rotation": -90
+        "rotation": -90,
+        "box": False
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",

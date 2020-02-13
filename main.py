@@ -40,9 +40,10 @@ player = Player(
 render_list.add(player)
 
 boss1 = Boss(
-    center = (650, 250)
+    center = (650, 250),
+    box = True
 )
-#render_list.add(boss1)
+render_list.add(boss1)
 
 count = 0
 asteroids = []
@@ -131,7 +132,8 @@ class Main(object):
                     render_list.add(Projectile(
                         image = player.standard_shot,
                         rotation = player.cfg["rotation"],
-                        position = player.rect.topright
+                        position = player.rect.topright,
+                        direction = "left",
                     ))
         # moving the spaceship
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
@@ -210,6 +212,15 @@ class Main(object):
                 scale = 2
             )
             self.scene = scenes["game_over"]
+        # boss shooting
+        time_stamps = [*str(pg.time.get_ticks())]
+        if random.randint(1, 25) == 12:
+            render_list.add(Projectile(
+                image = player.standard_shot,
+                rotation = player.cfg["rotation"],
+                direction = "right",
+                position = boss1.rect.topleft,
+            ))
     def loop(self):
         """pygame main loop."""
         while self.running:

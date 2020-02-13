@@ -11,7 +11,10 @@ class Projectile(pg.sprite.Sprite):
             self.image = pg.transform.rotate(self.image, kwargs["rotation"])
         self.rect = pg.Rect(kwargs["position"], self.image.get_rect().size)
     def update(self):
-        self.rect.left += u.DEFAULT["player"]["shooting_speed"]
+        if self.cfg["direction"] == "left":
+            self.rect.left += u.DEFAULT["player"]["shooting_speed"]
+        if self.cfg["direction"] == "right":
+            self.rect.left -= u.DEFAULT["player"]["shooting_speed"]
 class Explosion(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["explosion"])
@@ -141,9 +144,11 @@ class Boss(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.cfg["center"]
     def create_image(self):# pg.surface
-        #image = pg.Surface(self.cfg["size"], pg.SRCALPHA)
-
+        image = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = pg.transform.rotate(self.original, self.rotation)
+
+        if self.cfg["box"]:
+            image = u.drawBorder(image, size=1, color=(255,0,0))
 
         return image
 class Player(pg.sprite.Sprite):
