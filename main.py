@@ -59,6 +59,7 @@ healthbar = PlayerHealthBar(
 )
 render_list.add(healthbar)
 
+
 gameover_text = Text(
     text = "Game Over",
     size = 40,
@@ -98,6 +99,7 @@ class Main(object):
         self.scene = scenes["startup"]
         self.running = True
         self.pause = False
+        self.asteroids_shot = 0
         self.blow_up = Explosion(
             image = u.DEFAULT["explosion"]["image"],
             position = player.rect.center,
@@ -163,6 +165,7 @@ class Main(object):
                         asteroid.hit(player.damage)
 
                         if asteroid.health <= 0:
+                            self.asteroids_shot += 1
                             render_list.remove(asteroid)
                             asteroids[i] = create_asteroid()
                             asteroids[i].reposition((
@@ -170,6 +173,7 @@ class Main(object):
                                 random.randint(-24, screen_size[1] + 24)
                             ))
                             render_list.add(asteroids[i])
+
                 # when a projectile hits the player
                 if each.rect.colliderect(player.rect):
                     healthbar.health -= each.damage
@@ -253,15 +257,20 @@ class Main(object):
                 render_list.clear(self.scene, self.scene.background)
                 changes = render_list.draw(self.scene)
                 self.app.draw(self.scene)
-                self.app.draw(
-                    u.createText(
-                        text = "fps: {}".format(int(self.app.clock.get_fps()))
-                    )
+                # displaying text
+                fps = u.createText(
+                    text = "fps: {}".format(int(self.app.clock.get_fps()))
                 )
+                shots = u.createText(
+                    text = "Shots: {}".format(self.asteroids_shot)
+                )
+                #self.scene.blit(fps, (10, 8))
+                self.app.draw(shots, (10, fps.get_rect().height + 5))
                 # updating
                 for each in render_list: each.update()
                 self.scene.update()
                 self.app.update(changes)
+
             elif self.scene is scenes["game_over"]:
                 for evt in pg.event.get():
                     if evt.type is pg.QUIT:
@@ -282,6 +291,9 @@ class Main(object):
                     self.scene = scenes["startup"]
                     self.scene.blit(self.scene.background, (0, 0))
                     healthbar.health = 100
+                    for explosion in render_list:
+                        if type(explosion) is Explosion:
+                            render_list.remove(explosion)
 
 if __name__ == '__main__':
     Main()

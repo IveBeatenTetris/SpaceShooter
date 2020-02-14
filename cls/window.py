@@ -30,8 +30,8 @@ class Window(object):
         draws the given object to the window. 'object' can be a 'pg.surface',
         'pg.sprite' or just be pygame related like this game's entities.
         """
-        if type(object) is Scene:
-            if not pos: pos = object.rect
+        if not pos:
+            pos = object.rect
         else:
             pos = (0, 0)
 
