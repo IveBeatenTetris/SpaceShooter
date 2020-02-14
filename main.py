@@ -43,7 +43,8 @@ boss1 = Boss(
     center = (650, 250),
     #box = True,
     damage = 4,
-    shooting_speed = 5
+    shooting_speed = 5,
+    health = 30
 )
 #render_list.add(boss1)
 
@@ -154,6 +155,7 @@ class Main(object):
         # handling collisions and explosions
         for each in render_list:
             if type(each) is Projectile:
+                # when a projectile hits an asteroid
                 for i, asteroid in enumerate(asteroids):
                     if each.rect.colliderect(asteroid.rect):
                         render_list.add(Explosion(
@@ -176,7 +178,27 @@ class Main(object):
                                 random.randint(-24, screen_size[1] + 24)
                             ))
                             render_list.add(asteroids[i])
+                # when a projectile hits the boss
+                if each.rect.colliderect(boss1.rect):
+                    render_list.add(Explosion(
+                        image = u.DEFAULT["explosion"]["image"],
+                        position = boss1.rect.midleft,
+                        cooldown = 65,
+                        scale = 1
+                    ))
+                    render_list.remove(each)
+                    boss1.hit(player.damage)
 
+                    # on death
+                    if boss1.health <= 0:
+                        render_list.add(Explosion(
+                            image = u.DEFAULT["explosion"]["image"],
+                            position = boss1.rect.midleft,
+                            cooldown = 65,
+                            scale = 1
+                        ))
+                        render_list.remove(boss1)
+                        score += 5
                 # when a projectile hits the player
                 if each.rect.colliderect(player.rect):
                     healthbar.health -= each.damage
@@ -200,6 +222,7 @@ class Main(object):
             if type(each) is Projectile:
                 if each.rect.left > self.app.size[0]:
                     render_list.remove(each)
+
             elif type(each) is Asteroid:
                 if each.moving:
                     if each.moving == "left":
@@ -241,7 +264,7 @@ class Main(object):
                     render_list.remove(projectile)
             self.scene = scenes["game_over"]
         # spawing boss
-        if self.score == 10:
+        if self.score == 1:
             render_list.add(boss1)
         if boss1 in render_list:
             # boss moving
@@ -252,7 +275,10 @@ class Main(object):
                     image = player.standard_shot,
                     rotation = player.cfg["rotation"],
                     direction = "right",
-                    position = boss1.rect.midleft,
+                    position = (
+                        boss1.rect.left - 10,
+                        boss1.rect.midleft[1]
+                    ),
                     damage = boss1.damage,
                     owner = boss1
                 ))

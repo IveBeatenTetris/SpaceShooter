@@ -36,7 +36,8 @@ DEFAULT = {
         "rotation": -90,
         "box": False,
         "damage": 5,
-        "shooting_speed": 1
+        "shooting_speed": 1,
+        "health": 100
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",
