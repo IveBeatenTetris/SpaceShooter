@@ -9,7 +9,9 @@ class Projectile(pg.sprite.Sprite):
         self.image = kwargs["image"]
         if kwargs["rotation"] > 0:
             self.image = pg.transform.rotate(self.image, kwargs["rotation"])
-        self.rect = pg.Rect(kwargs["position"], self.image.get_rect().size)
+        self.rect = self.image.get_rect()
+        self.rect.center = kwargs["position"]
+        self.damage = kwargs["damage"]
     def update(self):
         if self.cfg["direction"] == "left":
             self.rect.left += u.DEFAULT["player"]["shooting_speed"]
@@ -24,6 +26,7 @@ class Explosion(pg.sprite.Sprite):
         self.rect.center = self.cfg["position"]
         self.cooldown = self.cfg["cooldown"]
         self.rotation = random.randint(0, 360)
+        self.scale = self.cfg["scale"]
         self.size = [*self.rect.size]
     # dynamic attributes
     @property# pg.surface
@@ -47,12 +50,16 @@ class Explosion(pg.sprite.Sprite):
             self.rect.size = img.get_rect().size
             #self.rect.center = self.cfg["position"]
             image = pg.Surface(self.rect.size, pg.SRCALPHA)
-
-        if "scale" in self.cfg:
-            img = u.scale(img, self.cfg["scale"])
-            print("scale")
         # drawing created image to returning surface
         image.blit(img, (0, 0))
+
+        if self.scale > 1:
+            old_posistion = self.rect.center
+            old_size = image.get_rect().size
+            image = u.scale(image, self.scale)
+            new_size = image.get_rect().size
+            self.rect.centerx -= (new_size[0] - old_size[0]) / self.scale
+            self.rect.centery -= (new_size[1] - old_size[1]) / self.scale
 
         return image
     # basic operations
@@ -142,7 +149,8 @@ class Boss(pg.sprite.Sprite):
         self.rotation = self.cfg["rotation"]
         self.image = self.create_image()
         self.rect = self.image.get_rect()
-        self.rect.center = self.cfg["center"]
+        self.rect.center = self.cfg["center"]#
+        self.damage = self.cfg["damage"]
     def create_image(self):# pg.surface
         image = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = pg.transform.rotate(self.original, self.rotation)
@@ -163,6 +171,7 @@ class Player(pg.sprite.Sprite):
         self.speed = self.cfg["speed"]
         self.standard_shot = pg.image.load(self.cfg["default_shot"])
         self.damage = self.cfg["damage"]
+        self.damaged = None
     def create_image(self):
         img = self.original_image.copy()
 

@@ -41,7 +41,8 @@ render_list.add(player)
 
 boss1 = Boss(
     center = (650, 250),
-    box = True
+    box = True,
+    damage = 5
 )
 render_list.add(boss1)
 
@@ -100,7 +101,8 @@ class Main(object):
         self.blow_up = Explosion(
             image = u.DEFAULT["explosion"]["image"],
             position = player.rect.center,
-            cooldown = 100
+            cooldown = 100,
+            scale = 2
         )
         self.loop()
     def handle_events(self):
@@ -132,8 +134,12 @@ class Main(object):
                     render_list.add(Projectile(
                         image = player.standard_shot,
                         rotation = player.cfg["rotation"],
-                        position = player.rect.topright,
+                        position = (
+                            player.rect.right + 16,
+                            player.rect.midright[1],
+                        ),
                         direction = "left",
+                        damage = 1
                     ))
         # moving the spaceship
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
@@ -164,6 +170,17 @@ class Main(object):
                                 random.randint(-24, screen_size[1] + 24)
                             ))
                             render_list.add(asteroids[i])
+                # when a projectile hits the player
+                if each.rect.colliderect(player.rect):
+                    healthbar.health -= each.damage
+                    render_list.remove(each)
+                    explosion = Explosion(
+                        image = u.DEFAULT["explosion"]["image"],
+                        position = each.rect.midleft,
+                        cooldown = 65,
+                        scale = 1
+                    )
+                    render_list.add(explosion)
             # removing explosion form render list after cooldown reached 0
             elif type(each) is Explosion:
                 if each.cooldown == 0:
@@ -171,7 +188,7 @@ class Main(object):
             elif type(each) is Asteroid:
                 if each.rect.colliderect(player.rect):
                     healthbar.health -= each.damage
-        # restarting sprites going out of bounds
+                    player.damaged = 10
         for each in render_list:
             if type(each) is Projectile:
                 if each.rect.left > self.app.size[0]:
@@ -193,6 +210,7 @@ class Main(object):
         # game over
         if healthbar.health <= 0:
             render_list.add(self.blow_up)
+
             if self.blow_up.cooldown > 0:
                 self.blow_up.cooldown -= 1
                 self.blow_up.rect.center = player.rect.center
@@ -211,6 +229,9 @@ class Main(object):
                 cooldown = 100,
                 scale = 2
             )
+            for projectile in render_list:
+                if type(projectile) is Projectile:
+                    render_list.remove(projectile)
             self.scene = scenes["game_over"]
         # boss shooting
         time_stamps = [*str(pg.time.get_ticks())]
@@ -219,7 +240,8 @@ class Main(object):
                 image = player.standard_shot,
                 rotation = player.cfg["rotation"],
                 direction = "right",
-                position = boss1.rect.topleft,
+                position = boss1.rect.midleft,
+                damage = boss1.damage
             ))
     def loop(self):
         """pygame main loop."""

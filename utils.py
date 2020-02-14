@@ -34,12 +34,14 @@ DEFAULT = {
         "size": (48, 48),
         "center": (0, 0),
         "rotation": -90,
-        "box": False
+        "box": False,
+        "damage": 5
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",
         "cooldown": 100,
-        "position": (0, 0)
+        "position": (0, 0),
+        "scale": 1
     },
     "particle": {
         "size": (1, 1),
