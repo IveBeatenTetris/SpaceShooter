@@ -7,12 +7,22 @@ class Projectile(pg.sprite.Sprite):
         self.cfg = kwargs
         pg.sprite.Sprite.__init__(self)
         self.image = kwargs["image"]
+        self.rect = self.image.get_rect()
+        if type(kwargs["owner"]) is Boss:
+            self.paint()
         if kwargs["rotation"] > 0:
             self.image = pg.transform.rotate(self.image, kwargs["rotation"])
-        self.rect = self.image.get_rect()
         self.rect.center = kwargs["position"]
         self.damage = kwargs["damage"]
         self.owner = kwargs["owner"]
+    def paint(self):
+        hue = self.image.copy().convert()
+        hue.set_alpha(150)
+        hue.fill((200, 10, 10))
+
+        self.image = self.image.copy()
+        self.image.blit(hue, (0, 0))
+
     def update(self):
         if type(self.cfg["owner"]) == Player:
             shooting_speed = u.DEFAULT["player"]["shooting_speed"]

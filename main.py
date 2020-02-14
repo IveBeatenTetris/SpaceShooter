@@ -42,10 +42,10 @@ render_list.add(player)
 boss1 = Boss(
     center = (650, 250),
     #box = True,
-    damage = 5,
+    damage = 4,
     shooting_speed = 5
 )
-render_list.add(boss1)
+#render_list.add(boss1)
 
 count = 0
 asteroids = []
@@ -99,7 +99,7 @@ class Main(object):
         self.scene = scenes["startup"]
         self.running = True
         self.pause = False
-        self.asteroids_shot = 0
+        self.score = 0
         self.blow_up = Explosion(
             image = u.DEFAULT["explosion"]["image"],
             position = player.rect.center,
@@ -167,8 +167,8 @@ class Main(object):
 
                         if asteroid.health <= 0:
                             if each.owner is player:
-                                self.asteroids_shot += 1
-                                
+                                self.score += 1
+
                             render_list.remove(asteroid)
                             asteroids[i] = create_asteroid()
                             asteroids[i].reposition((
@@ -240,18 +240,22 @@ class Main(object):
                 if type(projectile) is Projectile:
                     render_list.remove(projectile)
             self.scene = scenes["game_over"]
-        # boss moving
-        boss1.move(player.rect)
-        # boss shooting
-        if random.randint(1, 25) == 12:
-            render_list.add(Projectile(
-                image = player.standard_shot,
-                rotation = player.cfg["rotation"],
-                direction = "right",
-                position = boss1.rect.midleft,
-                damage = boss1.damage,
-                owner = boss1
-            ))
+        # spawing boss
+        if self.score == 10:
+            render_list.add(boss1)
+        if boss1 in render_list:
+            # boss moving
+            boss1.move(player.rect)
+            # boss shooting
+            if random.randint(1, 25) == 12:
+                render_list.add(Projectile(
+                    image = player.standard_shot,
+                    rotation = player.cfg["rotation"],
+                    direction = "right",
+                    position = boss1.rect.midleft,
+                    damage = boss1.damage,
+                    owner = boss1
+                ))
     def loop(self):
         """pygame main loop."""
         while self.running:
@@ -267,7 +271,7 @@ class Main(object):
                     text = "fps: {}".format(int(self.app.clock.get_fps()))
                 )
                 shots = u.createText(
-                    text = "Shots: {}".format(self.asteroids_shot)
+                    text = "Shots: {}".format(self.score)
                 )
                 #self.scene.blit(fps, (10, 8))
                 self.app.draw(shots, (10, fps.get_rect().height + 5))
