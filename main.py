@@ -59,7 +59,6 @@ healthbar = PlayerHealthBar(
 )
 render_list.add(healthbar)
 
-
 gameover_text = Text(
     text = "Game Over",
     size = 40,
@@ -237,6 +236,8 @@ class Main(object):
                 if type(projectile) is Projectile:
                     render_list.remove(projectile)
             self.scene = scenes["game_over"]
+        # boss moving
+        boss1.move(player.rect)
         # boss shooting
         time_stamps = [*str(pg.time.get_ticks())]
         if random.randint(1, 25) == 12:

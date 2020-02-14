@@ -151,6 +151,9 @@ class Boss(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.cfg["center"]#
         self.damage = self.cfg["damage"]
+        self.next_move_step = 100
+        self.move_to = random.randint(0, 100)
+        self.slide_to = None
     def create_image(self):# pg.surface
         image = pg.Surface(self.cfg["size"], pg.SRCALPHA)
         image = pg.transform.rotate(self.original, self.rotation)
@@ -159,6 +162,13 @@ class Boss(pg.sprite.Sprite):
             image = u.drawBorder(image, size=1, color=(255,0,0))
 
         return image
+    def move(self, rect):
+        if rect.centery > self.rect.centery:
+            self.rect.centery += 2
+        elif rect.centery < self.rect.centery:
+            self.rect.centery -= 1.5
+    def update(self):
+        pass
 class Player(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["player"])
