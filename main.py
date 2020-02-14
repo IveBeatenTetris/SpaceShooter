@@ -41,8 +41,9 @@ render_list.add(player)
 
 boss1 = Boss(
     center = (650, 250),
-    box = True,
-    damage = 5
+    #box = True,
+    damage = 5,
+    shooting_speed = 5
 )
 render_list.add(boss1)
 
@@ -140,7 +141,8 @@ class Main(object):
                             player.rect.midright[1],
                         ),
                         direction = "left",
-                        damage = 1
+                        damage = 1,
+                        owner = player
                     ))
         # moving the spaceship
         if keys[pg.K_a] or keys[pg.K_d] or keys[pg.K_w] or keys[pg.K_s]:
@@ -164,7 +166,9 @@ class Main(object):
                         asteroid.hit(player.damage)
 
                         if asteroid.health <= 0:
-                            self.asteroids_shot += 1
+                            if each.owner is player:
+                                self.asteroids_shot += 1
+                                
                             render_list.remove(asteroid)
                             asteroids[i] = create_asteroid()
                             asteroids[i].reposition((
@@ -239,14 +243,14 @@ class Main(object):
         # boss moving
         boss1.move(player.rect)
         # boss shooting
-        time_stamps = [*str(pg.time.get_ticks())]
         if random.randint(1, 25) == 12:
             render_list.add(Projectile(
                 image = player.standard_shot,
                 rotation = player.cfg["rotation"],
                 direction = "right",
                 position = boss1.rect.midleft,
-                damage = boss1.damage
+                damage = boss1.damage,
+                owner = boss1
             ))
     def loop(self):
         """pygame main loop."""

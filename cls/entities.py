@@ -12,11 +12,17 @@ class Projectile(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = kwargs["position"]
         self.damage = kwargs["damage"]
+        self.owner = kwargs["owner"]
     def update(self):
+        if type(self.cfg["owner"]) == Player:
+            shooting_speed = u.DEFAULT["player"]["shooting_speed"]
+        elif type(self.cfg["owner"]) == Boss:
+            shooting_speed = self.cfg["owner"].shooting_speed
+
         if self.cfg["direction"] == "left":
-            self.rect.left += u.DEFAULT["player"]["shooting_speed"]
+            self.rect.left += shooting_speed
         if self.cfg["direction"] == "right":
-            self.rect.left -= u.DEFAULT["player"]["shooting_speed"]
+            self.rect.left -= shooting_speed
 class Explosion(pg.sprite.Sprite):
     def __init__(self, **kwargs):
         self.cfg = u.validateDict(kwargs, u.DEFAULT["explosion"])
@@ -151,6 +157,7 @@ class Boss(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.cfg["center"]#
         self.damage = self.cfg["damage"]
+        self.shooting_speed = self.cfg["shooting_speed"]
         self.next_move_step = 100
         self.move_to = random.randint(0, 100)
         self.slide_to = None

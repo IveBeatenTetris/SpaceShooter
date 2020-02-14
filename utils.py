@@ -35,19 +35,14 @@ DEFAULT = {
         "center": (0, 0),
         "rotation": -90,
         "box": False,
-        "damage": 5
+        "damage": 5,
+        "shooting_speed": 1
     },
     "explosion": {
         "image": PATH["images"] + "explosion1.png",
         "cooldown": 100,
         "position": (0, 0),
         "scale": 1
-    },
-    "particle": {
-        "size": (1, 1),
-        "color": (200, 200, 200),
-        "velocity": (1, 1),
-        "center": (0, 0)
     }
 }
 
