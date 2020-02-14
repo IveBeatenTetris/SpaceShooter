@@ -34,7 +34,7 @@ player = Player(
     #box = True,
     scale = 2,
     speed = 3,
-    damage = 5,
+    damage = 10,
     center = (50, 200)
 )
 render_list.add(player)
@@ -107,6 +107,8 @@ class Main(object):
             cooldown = 100,
             scale = 2
         )
+        self.boss_spawn = 0
+        self.boss_spawns_at = 10
         self.loop()
     def handle_events(self):
         blow_up = None
@@ -170,6 +172,7 @@ class Main(object):
                         if asteroid.health <= 0:
                             if each.owner is player:
                                 self.score += 1
+                                self.boss_spawn += 1
 
                             render_list.remove(asteroid)
                             asteroids[i] = create_asteroid()
@@ -179,26 +182,27 @@ class Main(object):
                             ))
                             render_list.add(asteroids[i])
                 # when a projectile hits the boss
-                if each.rect.colliderect(boss1.rect):
-                    render_list.add(Explosion(
-                        image = u.DEFAULT["explosion"]["image"],
-                        position = boss1.rect.midleft,
-                        cooldown = 65,
-                        scale = 1
-                    ))
-                    render_list.remove(each)
-                    boss1.hit(player.damage)
-
-                    # on death
-                    if boss1.health <= 0:
+                if boss1 in render_list:
+                    if each.rect.colliderect(boss1.rect):
                         render_list.add(Explosion(
                             image = u.DEFAULT["explosion"]["image"],
                             position = boss1.rect.midleft,
                             cooldown = 65,
                             scale = 1
                         ))
-                        render_list.remove(boss1)
-                        score += 5
+                        render_list.remove(each)
+                        boss1.hit(player.damage)
+
+                        # on death
+                        if boss1.health <= 0:
+                            render_list.add(Explosion(
+                                image = u.DEFAULT["explosion"]["image"],
+                                position = boss1.rect.midleft,
+                                cooldown = 65,
+                                scale = 1
+                            ))
+                            render_list.remove(boss1)
+                            self.score += 5
                 # when a projectile hits the player
                 if each.rect.colliderect(player.rect):
                     healthbar.health -= each.damage
@@ -264,8 +268,9 @@ class Main(object):
                     render_list.remove(projectile)
             self.scene = scenes["game_over"]
         # spawing boss
-        if self.score == 1:
+        if self.boss_spawn == 10:
             render_list.add(boss1)
+            self.boss_spawn = 0
         if boss1 in render_list:
             # boss moving
             boss1.move(player.rect)
