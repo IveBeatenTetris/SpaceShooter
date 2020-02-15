@@ -34,7 +34,7 @@ player = Player(
     #box = True,
     scale = 2,
     speed = 3,
-    damage = 10,
+    damage = 3,
     center = (50, 200)
 )
 render_list.add(player)
@@ -46,7 +46,6 @@ boss1 = Boss(
     shooting_speed = 5,
     health = 30
 )
-#render_list.add(boss1)
 
 count = 0
 asteroids = []
@@ -94,8 +93,8 @@ class Main(object):
     def __init__(self):
         self.app = Window(
             size = scenes["startup"].rect.size,
-            title = "Space Shooter 0.1",
-            fps = 70
+            title = "Space Shooter 1.0",
+            fps = 60
         )
         self.scene = scenes["startup"]
         self.running = True
